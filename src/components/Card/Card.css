@@ -1,0 +1,15 @@
+.card {
+    position: relative;
+}
+
+.card img {
+    height: 30%;
+    width: auto;
+    display: block;
+    border: 2px solid #fff;
+    border-radius: 6px;
+}
+
+.back-card {
+    background: red;
+}

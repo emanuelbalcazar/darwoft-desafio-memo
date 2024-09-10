@@ -4,6 +4,11 @@
   margin: 30px auto;
 }
 
+.turns {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
 button {
   background: none;
   border: 2px solid #fff;
@@ -23,7 +28,7 @@ button:hover {
 .grid {
   margin-right: 80px;
   margin-left: 80px;
-  margin-top: 20px;
+  margin-top: 30px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 20px;

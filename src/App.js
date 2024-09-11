@@ -3,19 +3,42 @@ import './App.css';
 import cardImages from './utils/CardImages';
 import shuffleCards from './utils/ShuffleCards';
 import Card from './components/Card/Card';
+import Counter from './components/Counter/Counter';
+import Modal from './components/Modal/Modal';
+import formatTimeSecondsToMinutes from './utils/FormatTime';
+import getLevelDifficulty from './utils/LevelAssignment';
 
 function App() {
-
   const [cards, setCards] = useState([]);
   const [turns, setTurns] = useState(0);
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [numberOfPairsOfCards, setNumberOfPairsOfCards] = useState(cardImages.length);
+  const [numberOfPairsOfCardsFound, setNumberOfPairsOfCardsFound] = useState(0);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [timerIsActive, setTimerIsActive] = useState(false);
+  const [levelDifficultySelected, setLevelDifficultySelected] = useState('normal');
+
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+  const timerStart = () => setTimerIsActive(true);
+  const timerStop = () => setTimerIsActive(false);
+
+  const timerReset = () => {
+    setTimerIsActive(false);
+    setSeconds(0);
+  };
 
   // initialice game
   useEffect(() => {
     handleNewGame();
   }, []);
+
+  useEffect(() => {
+    handleNewGame();
+  }, [levelDifficultySelected]);
 
   // compare 2 selected cards
   useEffect(() => {
@@ -29,6 +52,7 @@ function App() {
           return prevCards.map(card => {
             // mark a card on state matched
             if (card.src === choiceOne.src) {
+              setNumberOfPairsOfCardsFound(numberOfPairsOfCardsFound + 1);
               return { ...card, matched: true };
             } else {
               return card;
@@ -38,7 +62,6 @@ function App() {
 
         resetTurn();
       } else {
-        console.log('> las cards no coinciden');
         setTimeout(() => {
           resetTurn();
         }, [1000])
@@ -46,14 +69,27 @@ function App() {
     }
   }, [choiceOne, choiceTwo]);
 
+  // check if player win the game
+  useEffect(() => {
+    if (numberOfPairsOfCardsFound === numberOfPairsOfCards) {
+      openModal();
+      timerStop();
+    }
+  }, [numberOfPairsOfCardsFound]);
+
   // start a new game
   const handleNewGame = () => {
-    const shuffledCards = shuffleCards(cardImages);
+    const levelDifficulty = getLevelDifficulty(levelDifficultySelected);
+
+    const shuffledCards = shuffleCards(cardImages.slice(0, levelDifficulty));
     setChoiceOne(null);
     setChoiceTwo(null);
     setCards(shuffledCards);
     setTurns(0);
-    console.log('> new game', shuffledCards, turns);
+    setNumberOfPairsOfCardsFound(0);
+    setNumberOfPairsOfCards(levelDifficulty);
+    timerReset();
+    timerStart();
   }
 
   const handleChoice = (card) => {
@@ -68,11 +104,31 @@ function App() {
     setDisabled(false);
   };
 
+  const handleLevelDifficulty = (level) => {
+    setLevelDifficultySelected(level);
+  };
+
   return (
     <div className='app'>
       <h1>Memo</h1>
       <button onClick={handleNewGame}>Nueva Partida</button>
+
+      <div>
+        <button onClick={() => handleLevelDifficulty('veryEasy')}>Muy Facil</button>
+        <button onClick={() => handleLevelDifficulty('easy')}>Facil</button>
+        <button onClick={() => handleLevelDifficulty('normal')}>Normal</button>
+        <button onClick={() => handleLevelDifficulty('hard')}>Dificil</button>
+      </div>
+
       <div className='turns'>Turnos: {turns}</div>
+      <div>
+        <Counter
+          seconds={seconds}
+          setSeconds={setSeconds}
+          isActive={timerIsActive}
+        />
+      </div>
+
       <div className='grid'>
         {cards.map(card => (
           <div className='card' key={card.id}>
@@ -89,6 +145,11 @@ function App() {
         ))}
       </div>
 
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <h2>¡Ganaste!</h2>
+        <p>Tu tiempo: {formatTimeSecondsToMinutes(seconds)}</p>
+        <p>Total de turnos: {turns}</p>
+      </Modal>
     </div>
   );
 }

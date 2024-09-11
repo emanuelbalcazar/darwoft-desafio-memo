@@ -1,14 +1,9 @@
 import './Card.css';
 
-/**
- * Single Card
- * @param {Object} card 
- */
 export default function Card({ card, handleChoice, flipped, disabled }) {
 
     const handleClick = () => {
-        if (!disabled)
-            handleChoice(card);
+        if (!disabled) handleChoice(card);
     }
 
     return (

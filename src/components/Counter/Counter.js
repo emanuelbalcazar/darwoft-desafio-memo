@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import formatTimeSecondsToMinutes from "../../utils/FormatTime";
 
 export default function Counter({ seconds, setSeconds, isActive }) {

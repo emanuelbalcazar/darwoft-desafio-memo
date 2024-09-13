@@ -112,8 +112,8 @@ function App() {
     <div className='app'>
       <h1>Memo</h1>
       <button onClick={handleNewGame}>Nueva Partida</button>
-
-      <div>
+      
+      <div className='levelChoice'>
         <button onClick={() => handleLevelDifficulty('veryEasy')}>Muy Facil</button>
         <button onClick={() => handleLevelDifficulty('easy')}>Facil</button>
         <button onClick={() => handleLevelDifficulty('normal')}>Normal</button>
